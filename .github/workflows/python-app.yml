@@ -1,69 +1,45 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Python application
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
+name: calctest
+on: push
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8' # Укажите версию Python, которую вы используете
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8' # Укажите версию Python, которую вы используете
 
-    - name: Install dependencies
-      run: |
-        pip install pyqt5
+      - name: Install dependencies
+        run: |
+          pip install pyqt5
 
-    - name: Run tests
-      run: |
-        python main.py &
-        sleep 5
-        if ! pgrep -f main.py > /dev/null; then
-          echo "First test failed: Application did not start"
-          exit 1
-        fi
-        kill $(pgrep -f main.py)
-        echo "First test passed: Application started and stopped successfully"
-        
-        # Example of a second test checking for basic calculator functionality
-        python -c "
-import sys
-from PyQt5.QtWidgets import QApplication
-from main import Calculator
+      - name: Run main.py and test
+        run: |
+          python main.py &
+          sleep 5
+          if ! pgrep -f main.py > /dev/null; then
+            echo "First test failed: Application did not start"
+            exit 1
+          fi
 
-app = QApplication(sys.argv)
-calculator = Calculator()
-calculator.show()
+          # Addition test
+          echo "1+2=" | python main.py | grep -q "3"
+          if [ $? -ne 0 ]; then
+            echo "Addition test failed: 1 + 2 did not equal 3"
+            exit 1
+          fi
 
-# Simulate button clicks to perform a calculation, e.g., 1 + 2 = 3
-calculator.label.setText('1')
-calculator.button_clicked() # Click 1
-calculator.label.setText(calculator.label.text() + '+')
-calculator.button_clicked() # Click +
-calculator.label.setText(calculator.label.text() + '2')
-calculator.button_clicked() # Click 2
-calculator.label.setText(calculator.label.text() + '=')
-calculator.button_clicked() # Click =
+          # Subtraction test
+          echo "5-3=" | python main.py | grep -q "2"
+          if [ $? -ne 0 ]; then
+            echo "Subtraction test failed: 5 - 3 did not equal 2"
+            exit 1
+          fi
 
-if calculator.label.text() != '3':
-    print('Second test failed: Calculation 1 + 2 did not equal 3')
-    sys.exit(1)
-else:
-    print('Second test passed: Calculation 1 + 2 = 3')
-    sys.exit(0)
-"
+          kill $(pgrep -f main.py)
+          echo "All tests passed: Addition and subtraction tests completed successfully"
