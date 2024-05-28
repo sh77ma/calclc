@@ -1,4 +1,5 @@
-name: calctest
+name: Cripto-test
+
 on: push
 
 jobs:
