@@ -21,7 +21,7 @@ jobs:
 
       - name: Run addition test
         run: |
-          result=$(echo -e "5\n+\n3\nquit" | python main.py)
+          result=$(python main.py 5 + 3)
           if [[ $result != *"8"* ]]; then
             echo "Addition test failed: Expected '8', got '$result'"
             exit 1
@@ -29,16 +29,8 @@ jobs:
 
       - name: Run subtraction test
         run: |
-          result=$(echo -e "7\n-\n4\nquit" | python main.py)
+          result=$(python main.py 7 - 4)
           if [[ $result != *"3"* ]]; then
             echo "Subtraction test failed: Expected '3', got '$result'"
-            exit 1
-          fi
-
-      - name: Run program execution test
-        run: |
-          result=$(echo -e "quit" | python main.py)
-          if [[ $result != *"Goodbye!"* ]]; then
-            echo "Program execution test failed: Expected 'Goodbye!', got '$result'"
             exit 1
           fi
