@@ -25,6 +25,8 @@ jobs:
           if [[ $result != *"8"* ]]; then
             echo "Addition test failed: Expected '8', got '$result'"
             exit 1
+          else
+            echo "Addition test passed"
           fi
 
       - name: Run subtraction test
@@ -33,4 +35,6 @@ jobs:
           if [[ $result != *"3"* ]]; then
             echo "Subtraction test failed: Expected '3', got '$result'"
             exit 1
+          else
+            echo "Subtraction test passed"
           fi
