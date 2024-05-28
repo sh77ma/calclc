@@ -1,75 +1,44 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+def addition(num1, num2):
+    return num1 + num2
 
-class Calculator(QtWidgets.QWidget):
-    """
-    Простой калькулятор с графическим интерфейсом на PyQt5.
-    :param label: Поле для отображения ввода и результата.
-    :type label: QtWidgets.QLabel
-    """
-    def __init__(self):
-        """
-        Инициализирует калькулятор и создает его интерфейс.
-        """
-        super().__init__()
+def subtraction(num1, num2):
+    return num1 - num2
 
-        self.setWindowTitle("Калькулятор")
-        self.setGeometry(100, 100, 300, 400)
+def multiplication(num1, num2):
+    return num1 * num2
 
-        self.label = QtWidgets.QLabel("0", self)
-        self.label.setGeometry(20, 20, 260, 50)
-        self.label.setStyleSheet("border: 1px solid gray; font-size: 20px;")
-        self.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+def division(num1, num2):
+    if num2 == 0:
+        return "Error: Division by zero"
+    else:
+        return num1 / num2
 
-        self.create_buttons()
+def main():
+    print("Console Calculator")
+    print("Enter 'quit' to exit")
 
-    def create_buttons(self):
-        """
-        Создает кнопки калькулятора и размещает их на интерфейсе.
-        """
-        button_list = [
-            'C', '', '⌫', '/',
-            '7', '8', '9', '*',
-            '4', '5', '6', '-',
-            '1', '2', '3', '+',
-            '00', '0', '.', '='
-        ]
+    while True:
+        operation = input("Enter operation (+, -, *, /): ")
+        if operation == 'quit':
+            print("Goodbye!")
+            break
 
-        row = 1
-        col = 0
-        for button_text in button_list:
-            button = QtWidgets.QPushButton(button_text, self)
-            button.setGeometry(20 + col * 70, 80 + row * 60, 60, 50)
-            button.clicked.connect(self.button_clicked)
-            col += 1
-            if col > 3:
-                col = 0
-                row += 1
+        try:
+            num1 = float(input("Enter first number: "))
+            num2 = float(input("Enter second number: "))
 
-    def button_clicked(self):
-        """
-        Обрабатывает нажатия на кнопки калькулятора.
-        """
-        button = self.sender()
-        text = button.text()
-
-        if text == '=':
-            try:
-                result = str(eval(self.label.text()))
-                self.label.setText(result)
-            except:
-                self.label.setText("Ошибка")
-        elif text == 'C':
-            self.label.setText("0")
-        elif text == '⌫':
-            self.label.setText(self.label.text()[:-1])
-        else:
-            if self.label.text() == "0":
-                self.label.setText(text)
+            if operation == '+':
+                print("Result:", addition(num1, num2))
+            elif operation == '-':
+                print("Result:", subtraction(num1, num2))
+            elif operation == '*':
+                print("Result:", multiplication(num1, num2))
+            elif operation == '/':
+                print("Result:", division(num1, num2))
             else:
-                self.label.setText(self.label.text() + text)
+                print("Invalid operation. Please enter '+', '-', '*', or '/'.")
+        except ValueError:
+            print("Invalid input. Please enter valid numbers.")
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication([])
-    calculator = Calculator()
-    calculator.show()
-    app.exec_()
+    main()
