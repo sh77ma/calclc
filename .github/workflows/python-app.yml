@@ -1,4 +1,4 @@
-name: Cripto-test
+name: Calculator-tests
 
 on: push
 
@@ -13,36 +13,32 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8' # Укажите версию Python, которую вы используете
+          python-version: '3.8'
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libxcb-xinerama0
-          pip install pyqt5
+          pip install pytest
 
-      - name: Run main.py and test
+      - name: Run addition test
         run: |
-          python main.py &
-          sleep 5
-          if ! pgrep -f main.py > /dev/null; then
-            echo "First test failed: Application did not start"
+          result=$(echo -e "5\n+\n3\nquit" | python main.py)
+          if [[ $result != *"8"* ]]; then
+            echo "Addition test failed: Expected '8', got '$result'"
             exit 1
           fi
 
-          # Addition test
-          echo "1+2=" | python main.py | grep -q "3"
-          if [ $? -ne 0 ]; then
-            echo "Addition test failed: 1 + 2 did not equal 3"
+      - name: Run subtraction test
+        run: |
+          result=$(echo -e "7\n-\n4\nquit" | python main.py)
+          if [[ $result != *"3"* ]]; then
+            echo "Subtraction test failed: Expected '3', got '$result'"
             exit 1
           fi
 
-          # Subtraction test
-          echo "5-3=" | python main.py | grep -q "2"
-          if [ $? -ne 0 ]; then
-            echo "Subtraction test failed: 5 - 3 did not equal 2"
+      - name: Run program execution test
+        run: |
+          result=$(echo -e "quit" | python main.py)
+          if [[ $result != *"Goodbye!"* ]]; then
+            echo "Program execution test failed: Expected 'Goodbye!', got '$result'"
             exit 1
           fi
-
-          kill $(pgrep -f main.py)
-          echo "All tests passed: Addition and subtraction tests completed successfully"
