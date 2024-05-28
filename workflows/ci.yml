@@ -1,16 +1,59 @@
-name: CI
+name: Calc
 
-on:
-  push:
-    branches:
-      - main
+on: push
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: pip install pytest
-      - name: Run tests
-        run: pytest tests
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8' # Укажите версию Python, которую вы используете
+
+    - name: Install dependencies
+      run: |
+        pip install pyqt5
+
+    - name: Run tests
+      run: |
+        python main.py &
+        sleep 5
+        if ! pgrep -f main.py > /dev/null; then
+          echo "First test failed: Application did not start"
+          exit 1
+        fi
+        kill $(pgrep -f main.py)
+        echo "First test passed: Application started and stopped successfully"
+        
+        # Example of a second test checking for basic calculator functionality
+        python -c "
+import sys
+from PyQt5.QtWidgets import QApplication
+from main import Calculator
+
+app = QApplication(sys.argv)
+calculator = Calculator()
+calculator.show()
+
+# Simulate button clicks to perform a calculation, e.g., 1 + 2 = 3
+calculator.label.setText('1')
+calculator.button_clicked() # Click 1
+calculator.label.setText(calculator.label.text() + '+')
+calculator.button_clicked() # Click +
+calculator.label.setText(calculator.label.text() + '2')
+calculator.button_clicked() # Click 2
+calculator.label.setText(calculator.label.text() + '=')
+calculator.button_clicked() # Click =
+
+if calculator.label.text() != '3':
+    print('Second test failed: Calculation 1 + 2 did not equal 3')
+    sys.exit(1)
+else:
+    print('Second test passed: Calculation 1 + 2 = 3')
+    sys.exit(0)
+"
