@@ -23,7 +23,7 @@ jobs:
         run: |
           result=$(python main.py 5 + 3)
           if [[ $result != *"9"* ]]; then
-            echo "Addition test failed: Expected '8', got '$result'"
+            echo "Addition test failed: Expected '9', got '$result'"
             exit 1
           else
             echo "Addition test passed"
